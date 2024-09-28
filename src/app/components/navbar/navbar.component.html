@@ -1,0 +1,82 @@
+<header
+    class="
+        block
+        w-full
+        bg-gray-800
+        px-4
+        py-4
+        sm:flex sm:items-center sm:justify-between
+    "
+>
+    <div class="flex justify-between sm:block">
+        <a class="block text-2xl font-bold text-white">Challenger - ECommerce</a>
+
+        <button class="block bg-transparent sm:hidden">
+            <input class="invisible appearance-none" type="checkbox" id="toggle" />
+
+            <label for="toggle">
+                <svg
+                    id="menu-icon"
+                    class="cursor-pointer inline-block text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    style="fill: rgba(255, 255, 255, 1);"
+                >
+                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+                </svg>
+
+                <svg
+                    id="close-icon"
+                    class="hidden cursor-pointer text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    style="fill: rgba(255, 255, 255, 1);"
+                >
+                    <path
+                        d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"
+                    ></path>
+                </svg>
+            </label>
+        </button>
+    </div>
+
+    <div
+        #linksDiv
+        id="navigation"
+        style="--menu-height: {{ linksDiv.children.length * 2.5 }}rem"
+        class="
+        flex
+        h-0
+        flex-col
+        items-center
+        gap-4
+        overflow-hidden
+        text-white
+        transition-all
+        duration-500
+        ease-in-out
+        sm:h-auto sm:flex-row sm:overflow-auto
+        "
+    >
+        <a [routerLink]="['/products']">Products</a>
+        <a [routerLink]="['/products/search-products']">Search Products</a>
+
+        <a [routerLink]="['/cart']" class="relative inline-flex items-center p-3 text-sm font-medium text-center rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-7 h-7 text-white rounded-full ring-2 ring-white p-1 relative"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" 
+                />
+            </svg>
+            <span class="sr-only">Notifications</span>
+            <div class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full top-1 end-1">{{store.itemsCount()}}</div>
+        </a>
+        
+        <ng-content></ng-content>
+    </div>
+</header>
