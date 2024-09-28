@@ -79,6 +79,6 @@ export class ProductsService {
                     return product.price >= 200;
             }
         }) !== undefined;
-        return (product.title.search(new RegExp(searchText, "i")) != -1 || product.title.search(new RegExp(searchText, "i")) != -1) && inCategory && inPrice;
+        return (product.title.search(new RegExp(searchText, "i")) != -1 || product.description.search(new RegExp(searchText, "i")) != -1) && inCategory && inPrice;
     }
 }
