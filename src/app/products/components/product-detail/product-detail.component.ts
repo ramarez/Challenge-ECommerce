@@ -8,18 +8,19 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CartStore } from '../../../shopping/stores/cart-store';
 import { ShowDescriptionDirective } from '../../../directives/show-description.directive';
 import { MessageService } from '../../../notification/services/message.service';
+import { LoadingComponent } from '../../../components/loading/loading.component';
 
 @Component({
     selector: 'app-product-detail',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterModule, ShowDescriptionDirective],
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, ShowDescriptionDirective, LoadingComponent],
     templateUrl: './product-detail.component.html',
     styleUrl: './product-detail.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailComponent implements OnInit {
     readonly store = inject(CartStore);
-    product: IProduct = {rating: {rate: 0}} as IProduct;
+    product: IProduct = {} as IProduct;
     cartForm = new FormGroup({
         quantity: new FormControl(1, [Validators.required, Validators.min(1)])
     });
@@ -30,7 +31,7 @@ export class ProductDetailComponent implements OnInit {
         private messageService: MessageService,
         private router: Router
     ) {
-
+        
     }
 
     ngOnInit(): void {
