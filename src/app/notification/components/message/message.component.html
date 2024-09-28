@@ -1,0 +1,21 @@
+@if(messages.length !== 0) {
+    <div id="toast-top-right" class="fixed items-center w-full md:max-w-md max-w-xs bg-white rtl:divide-x-reverse rounded-lg shadow top-5 right-5 z-50" role="alert">
+        @for (message of messages; track message) {
+            <div [class]="ccsClass(message, 1)">
+                <div [class]="ccsClass(message, 2)">
+                @if (message.header) {
+                    <p class="text-lg font-semibold">{{message.header}}</p>
+                }
+                <p class="text-sm font-normal">{{message.message}}</p>
+                </div>
+                <button (click)="removeMessage(message)" type="button" [class]="ccsClass(message, 3)" aria-label="Close">
+                    <span class="sr-only">Dismiss</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+        }
+    </div>
+}
+

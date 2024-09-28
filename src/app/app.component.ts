@@ -5,11 +5,12 @@ import { NavbarComponent } from "./components/navbar/navbar.component";
 import { FooterComponent } from "./components/footer/footer.component";
 import { AccountService } from './services/account.service';
 import { UserService } from './services/user.service';
+import { NotificationModule } from './notification/notification.module';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterOutlet, CommonModule, NavbarComponent, RouterModule, FooterComponent],
+    imports: [RouterOutlet, CommonModule, NavbarComponent, RouterModule, FooterComponent, NotificationModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
     providers: [AccountService, UserService]

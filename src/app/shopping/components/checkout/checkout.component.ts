@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { routes } from '../../../app.routes';
 import { Router, RouterModule } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MessageService } from '../../../notification/services/message.service';
 
 @Component({
     selector: 'app-checkout',
@@ -19,12 +20,13 @@ export class CheckoutComponent {
         cardNumber: new FormControl('', [Validators.required]),
     });
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private messageService: MessageService) {
 
     }
 
     onSubmit() {
         this.store.removeAll();
+        this.messageService.success('The payment process has been completed successfully, now you will be redirected to continue shopping.', 'Payment Status: Successful!!!', {autoClose: true, keepAfterRouteChange: true});
         this.router.navigateByUrl("/products");
     }
 

@@ -152,10 +152,10 @@
                         
                                             Selected: "font-medium text-gray-900", Not Selected: "text-gray-500"
                                         -->
-                                        <a (click)="sortBy = 0; onSubmit()" [ngClass]="{'font-medium text-gray-900': sortBy === 0, 'text-gray-500': sortBy !== 0}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-0">Most Popular</a>
-                                        <a (click)="sortBy = 1; onSubmit()" [ngClass]="{'font-medium text-gray-900': sortBy === 1, 'text-gray-500': sortBy !== 1}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-1">Best Rating</a>
-                                        <a (click)="sortBy = 2; onSubmit()" [ngClass]="{'font-medium text-gray-900': sortBy === 2, 'text-gray-500': sortBy !== 2}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-3">Price: Low to High</a>
-                                        <a (click)="sortBy = 3; onSubmit()" [ngClass]="{'font-medium text-gray-900': sortBy === 3, 'text-gray-500': sortBy !== 3}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-4">Price: High to Low</a>
+                                        <a (click)="onSort(0)" [ngClass]="{'font-medium text-gray-900': sortBy === 0, 'text-gray-500': sortBy !== 0}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-0">Most Popular</a>
+                                        <a (click)="onSort(1)" [ngClass]="{'font-medium text-gray-900': sortBy === 1, 'text-gray-500': sortBy !== 1}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-1">Best Rating</a>
+                                        <a (click)="onSort(2)" [ngClass]="{'font-medium text-gray-900': sortBy === 2, 'text-gray-500': sortBy !== 2}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-3">Price: Low to High</a>
+                                        <a (click)="onSort(3)" [ngClass]="{'font-medium text-gray-900': sortBy === 3, 'text-gray-500': sortBy !== 3}" class="block px-4 py-2 text-sm cursor-hand" role="menuitem" tabindex="-1" id="menu-item-4">Price: High to Low</a>
                                     </div>
                                 </div>
                             }
@@ -296,9 +296,9 @@
                                     <rect stroke="none" fill="url(#pattern-4d2f8758-2f66-4332-9b69-ca19e9dfc001)" width="100%" height="100%"></rect>
                                 </svg>
                             
-                                @if (productsNotFound) {
-                                    <div class="flex items-center justify-between h-full w-full">
-                                        <h1 class="text-2xl font-bold tracking-tight text-gray-900">Product not found</h1>
+                                @if (showMessage) {
+                                    <div class="flex items-center justify-center h-full w-full">
+                                        <h1 class="text-2xl font-bold tracking-tight"><span class="text-gray-500">{{message}}</span></h1>
                                     </div>
                                 } @else {
                                     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-4" >

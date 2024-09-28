@@ -1,9 +1,8 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
-import { MessageService } from '../services/message.service';
 import { Injectable, Injector } from '@angular/core';
 import { HttpStatusCodes } from '../utils/http-status-codes';
-import { IMessage, Message } from '../services/message';
+import { MessageService } from '../notification/services/message.service';
 
 @Injectable()
 export class HttpStatusesInterceptor implements HttpInterceptor {
@@ -27,10 +26,10 @@ export class HttpStatusesInterceptor implements HttpInterceptor {
             }));
     }
 
-    protected showMessage(message: IMessage) {
+    protected showMessageError(message: string) {
         const messageService = this.injector.get(MessageService, null);
         if (messageService) {
-            messageService.add(message);
+            messageService.error(message, undefined, {autoClose: true, keepAfterRouteChange: true});
         }
     }
 
@@ -48,7 +47,7 @@ export class HttpStatusesInterceptor implements HttpInterceptor {
             errorMessage = errorResponse.error;
         }
 
-        this.showMessage(Message.Error(errorMessage));
+        this.showMessageError(errorMessage);
     }
 
     private handleStatus400BadRequest(errorResponse: HttpErrorResponse): boolean {
@@ -73,14 +72,14 @@ export class HttpStatusesInterceptor implements HttpInterceptor {
             errorMessage = errorResponse.error;
         }
 
-        this.showMessage(Message.Error(errorMessage));
+        this.showMessageError(errorMessage);
         return false;
     }
 
     private handleStatus403Forbidden(errorResponse: HttpErrorResponse): void {
-        this.showMessage(Message.Error(
+        this.showMessageError(
             "You don’t have authorisation for this feature. Please refresh your page. If this problem persists, " +
             "please use the Report a Problem page found on the menu to alert your support team."
-        ));
+        );
     }
 }

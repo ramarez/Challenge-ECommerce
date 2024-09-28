@@ -7,6 +7,7 @@ import { ProductsService } from '../../services/products.service';
 import { IProduct } from '../../models/product';
 import { ShortDescriptionPipe } from '../../../pipes/short-description.pipe';
 import { RouterModule } from '@angular/router';
+import { catchError } from 'rxjs';
 
 @Component({
     selector: 'app-search-product',
@@ -29,7 +30,7 @@ export class SearchProductComponent implements OnInit {
     });
     sortBy: number = 0;
     foundProducts: IProduct[] = [];
-    searchInitialize: boolean = false;
+    searching: boolean = false;
 
     constructor(private categoriesService: CategoriesService,
         private productsService: ProductsService
@@ -64,15 +65,19 @@ export class SearchProductComponent implements OnInit {
         this.showFilterDialog = !this.showFilterDialog;
     }
 
+    onSort(sortOrder: number) {
+        this.showDropdownMenu = false;
+        if (sortOrder != this.sortBy) {
+            this.sortBy = sortOrder;
+            this.productsService.sort(this.foundProducts, this.sortBy);
+        }
+    }
+
     onSubmit() {
         this.showDropdownMenu = false;
         this.showFilterDialog = false;
-        if (!this.searchForm.valid) {
-            return;
-        }
-        
         this.foundProducts = [];
-        this.searchInitialize = true;
+        this.searching = true;
 
         const categories: ICategory[] = [];
         const prices: number[] = [];
@@ -89,7 +94,14 @@ export class SearchProductComponent implements OnInit {
         });
         
         this.productsService.find(this.textSearch.value, categories, prices, this.sortBy)
-            .subscribe((values) => this.foundProducts = values);
+            .pipe(catchError(err => {
+                this.searching = false;
+                throw err;
+            }))
+            .subscribe((values) => {
+                this.foundProducts = values;
+                this.searching = false;
+            });
     }
 
     get textSearch(): FormControl {
@@ -104,7 +116,15 @@ export class SearchProductComponent implements OnInit {
         return this.searchForm.get('prices') as FormArray;
     }
 
-    get productsNotFound(): boolean {
-        return this.searchInitialize && this.foundProducts.length === 0;
+    get showMessage(): boolean {
+        return this.searching || this.foundProducts.length === 0;
+    }
+
+    get message(): string {
+        if (this.searching) {
+            return "Searching...";
+        }
+
+        return "Not Products";
     }
 }

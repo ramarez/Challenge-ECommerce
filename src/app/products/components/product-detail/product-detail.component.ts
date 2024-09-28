@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { IProduct } from '../../models/product';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartStore } from '../../../shopping/stores/cart-store';
 import { ShowDescriptionDirective } from '../../../directives/show-description.directive';
+import { MessageService } from '../../../notification/services/message.service';
 
 @Component({
     selector: 'app-product-detail',
@@ -25,7 +26,9 @@ export class ProductDetailComponent implements OnInit {
     
     constructor(private route: ActivatedRoute,
         private productsService: ProductsService,
-        private ref: ChangeDetectorRef
+        private ref: ChangeDetectorRef,
+        private messageService: MessageService,
+        private router: Router
     ) {
 
     }
@@ -45,10 +48,9 @@ export class ProductDetailComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log(this.store.entityMap)
         this.store.setCartItem({id: this.product.id, product: this.product, quantity: this.quantity.value});
-        this.quantity.setValue(1);
-        console.log(this.store.entities())
+        this.messageService.success(`Update ${this.quantity.value} '${this.product.title}'.`, 'Shopping Card: Update successful', {autoClose: true, keepAfterRouteChange: true});
+        this.router.navigateByUrl('/products/search-products');
     }
 
     get rate(): number[] {
