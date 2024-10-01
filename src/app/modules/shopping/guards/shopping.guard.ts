@@ -1,7 +1,7 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { UserService } from '../../modules/security/services/user.service';
-import { MessageService } from '../../modules/notification';
+import { MessageService } from '../../notification/services/message.service';
+import { UserService } from '../../security';
 
 export const ShoppingGuard: CanActivateFn = (route, state) => {
     if (!inject(UserService).isLogged) {
