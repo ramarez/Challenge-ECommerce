@@ -5,14 +5,15 @@ import { ICategory } from '../../models/category';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../services/products.service';
 import { IProduct } from '../../models/product';
-import { ShortDescriptionPipe } from '../../../shared/pipes/short-description.pipe';
+import { ShortDescriptionPipe } from '../../../shared';
 import { RouterModule } from '@angular/router';
 import { catchError } from 'rxjs';
+import { ProductComponent } from '../../components/product/product.component';
 
 @Component({
     selector: 'app-search-product',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, FormsModule, ShortDescriptionPipe, RouterModule],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule, ShortDescriptionPipe, RouterModule, ProductComponent],
     templateUrl: './product-search.component.html',
     styleUrl: './product-search.component.scss'
 })
