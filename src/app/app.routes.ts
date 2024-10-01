@@ -14,14 +14,14 @@ export const routes: Routes =
     {
         path: 'products',
         loadChildren: () =>
-            import('./products/products.module').then(
+            import('./modules/products/products.module').then(
                 (mod) => mod.ProductsModule
             ),
     },
     {
         path: 'cart',
         loadChildren: () =>
-            import('./shopping/shopping.module').then(
+            import('./modules/shopping/shopping.module').then(
                 (shopping) => shopping.ShoppingModule
             ),
     },
