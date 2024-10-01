@@ -1,12 +1,20 @@
-import { HttpClient, HttpEvent } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { catchError, filter, map, Observable, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { computed, Injectable, signal } from '@angular/core';
+import { catchError, concatMap, delay, flatMap, map, mergeMap, Observable, of, reduce, retry, skip, startWith, Subject, switchMap, take, tap, toArray } from 'rxjs';
 import { IProduct } from '../models/product';
 import { ICategory } from '../models/category';
 import { MessageService } from '../../notification/services/message.service';
+import { IProductPage } from '../models/product-page';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+export interface IProductFilter {
+    text: string;
+    categories: ICategory[] | null;
+    prices: number[] | null;
+}
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ProductsService {
     protected url = "https://fakestoreapi.com";
@@ -25,6 +33,19 @@ export class ProductsService {
             );
     }
 
+    getPage(page: number, pageSize: number = 8): Observable<IProductPage> {
+        let totalItems = 0;
+        return this.http.get<IProduct[]>(`${this.url}/products`)
+            .pipe(
+                tap((products) => totalItems = products.length),
+                concatMap(x => x),
+                skip((page - 1) * pageSize),
+                take(pageSize),
+                toArray(),
+                switchMap(products => of({products, totalItems: totalItems}))
+            );
+    }
+
     get(productId: number): Observable<IProduct> {
         return this.http.get<IProduct>(`${this.url}/products/${productId}`)
             .pipe(
@@ -36,9 +57,10 @@ export class ProductsService {
     }
 
     find(searchText: string, categories: ICategory[], prices: number[], sortBy: number, limit: number = 10): Observable<IProduct[]> {
-        return this.http.get<IProduct[]>(`${this.url}/products?limit=${limit}`)
+        return this.http.get<IProduct[]>(`${this.url}/products`)
             .pipe(
-                    map(x => x.filter(p => this.filter(p, searchText, categories, prices))),
+                    map(x => x.filter(p => this.filterProduct(p, searchText, categories, prices))),
+                    take(limit),
                     tap(result => this.sort(result, sortBy)),
                     catchError(err => {
                         this.messageService.error(err, "Error in source", {autoClose: true});
@@ -62,7 +84,7 @@ export class ProductsService {
         });
     }
 
-    protected filter(product: IProduct, searchText: string, categories: ICategory[], prices: number[]): boolean {
+    protected filterProduct(product: IProduct, searchText: string, categories: ICategory[], prices: number[]): boolean {
         const inCategory = categories.length === 0 || categories.find(x => x.name == product.category) !== undefined;
         const inPrice = prices.length === 0 || prices.find(x => {
             //'$0 - $50', '$50 - $100', '$100 - $150', '$150 - $200', '$200+'

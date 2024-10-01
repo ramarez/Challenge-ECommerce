@@ -30,7 +30,7 @@ export class HttpStatusesInterceptor implements HttpInterceptor {
     protected showMessageError(message: string) {
         const messageService = this.injector.get(MessageService, null);
         if (messageService) {
-            messageService.error(message, undefined, {autoClose: true, keepAfterRouteChange: true});
+            messageService.error(message, "Http Response: Error", {autoClose: true, keepAfterRouteChange: true});
         }
     }
 

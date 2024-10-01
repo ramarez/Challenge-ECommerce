@@ -1,30 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { IProduct } from '../../models/product';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShortDescriptionPipe } from '../../../shared/pipes/short-description.pipe';
-import { ProductsService } from '../../services/products.service';
 import { LoadingComponent } from '../../../shared/components/loading/loading.component';
 import { ProductComponent } from '../../components/product/product.component';
+import { PaginationComponent } from "../../components/pagination/pagination.component";
+import { ProductsSignalService } from './products-signal.service';
 
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule, RouterModule, ShortDescriptionPipe, LoadingComponent, ProductComponent],
+    imports: [CommonModule, RouterModule, ShortDescriptionPipe, LoadingComponent, ProductComponent, PaginationComponent],
     templateUrl: './product-list.component.html',
-    styleUrl: './product-list.component.scss'
+    styleUrl: './product-list.component.scss',
+    providers: [ProductsSignalService]
 })
-export class ProductListComponent implements OnInit {
-    products: IProduct[] = [];
-
-    constructor(private productsService: ProductsService) {
-
-    }
-    
-    ngOnInit(): void {
-        this.productsService.getAll()
-            .subscribe((values: IProduct[]) => {
-                this.products = values;
-            });
-    }
+export class ProductListComponent {
+    service =  inject(ProductsSignalService);
 }
