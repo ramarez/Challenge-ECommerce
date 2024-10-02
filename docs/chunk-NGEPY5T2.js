@@ -1,1 +1,0 @@
-import{aa as i}from"./chunk-43GAKS5M.js";var o=(()=>{class t{transform(e,r){return e.substring(0,r)}static \u0275fac=function(r){return new(r||t)};static \u0275pipe=i({name:"shortDescription",type:t,pure:!0,standalone:!0})}return t})();export{o as a};
