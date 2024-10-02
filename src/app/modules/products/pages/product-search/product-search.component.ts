@@ -1,23 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CategoriesService } from '../../services/categories.service';
 import { ICategory } from '../../models/category';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProductsService } from '../../services/products.service';
-import { IProduct } from '../../models/product';
-import { ShortDescriptionPipe } from '../../../shared';
+import { ErrorComponent, LoadingComponent, ShortDescriptionPipe } from '../../../shared';
 import { RouterModule } from '@angular/router';
-import { catchError } from 'rxjs';
 import { ProductComponent } from '../../components/product/product.component';
+import { ProductSearchSignalService } from './product-search-signal.service';
+import { IProductFilter } from '../../models/product-filter';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
 
 @Component({
     selector: 'app-search-product',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, FormsModule, ShortDescriptionPipe, RouterModule, ProductComponent],
+    imports: [CommonModule, 
+        ReactiveFormsModule, FormsModule, 
+        ShortDescriptionPipe, RouterModule, PaginationComponent,
+        ProductComponent, LoadingComponent, ErrorComponent],
     templateUrl: './product-search.component.html',
-    styleUrl: './product-search.component.scss'
+    styleUrl: './product-search.component.scss',
+    providers: [ProductSearchSignalService]
 })
 export class ProductSearchComponent implements OnInit {
+    service =  inject(ProductSearchSignalService);
+    
     showDropdownMenu: boolean = false;
     showCategoryMenu: boolean = false;
     showPriceMenu: boolean = false;
@@ -30,11 +36,8 @@ export class ProductSearchComponent implements OnInit {
         prices: new FormArray([])
     });
     sortBy: number = 0;
-    foundProducts: IProduct[] = [];
-    searching: boolean = false;
 
-    constructor(private categoriesService: CategoriesService,
-        private productsService: ProductsService
+    constructor(private categoriesService: CategoriesService
     ) {
 
     }
@@ -70,16 +73,29 @@ export class ProductSearchComponent implements OnInit {
         this.showDropdownMenu = false;
         if (sortOrder != this.sortBy) {
             this.sortBy = sortOrder;
-            this.productsService.sort(this.foundProducts, this.sortBy);
+            if (this.service.totalItems() > 0 && this.searchForm.valid) {
+                this.pageChanged(1);                
+            }
         }
     }
 
     onSubmit() {
         this.showDropdownMenu = false;
         this.showFilterDialog = false;
-        this.foundProducts = [];
-        this.searching = true;
 
+        this.pageChanged(1);
+    }
+
+    pageChanged(page: number) {
+        this.service.currentPage$
+            .next({
+                page: page, 
+                filter: this.productFilter, 
+                sortedBy: this.sortBy
+            });
+    }
+
+    get productFilter(): IProductFilter {
         const categories: ICategory[] = [];
         const prices: number[] = [];
 
@@ -93,16 +109,12 @@ export class ProductSearchComponent implements OnInit {
                 prices.push(index);
             }
         });
-        
-        this.productsService.find(this.textSearch.value, categories, prices, this.sortBy)
-            .pipe(catchError(err => {
-                this.searching = false;
-                throw err;
-            }))
-            .subscribe((values) => {
-                this.foundProducts = values;
-                this.searching = false;
-            });
+
+        return {
+            text: this.textSearch.value as string,
+            categories,
+            prices
+        }
     }
 
     get textSearch(): FormControl {
@@ -115,17 +127,5 @@ export class ProductSearchComponent implements OnInit {
 
     get prices(): FormArray {
         return this.searchForm.get('prices') as FormArray;
-    }
-
-    get showMessage(): boolean {
-        return this.searching || this.foundProducts.length === 0;
-    }
-
-    get message(): string {
-        if (this.searching) {
-            return "Searching...";
-        }
-
-        return "Not Products";
     }
 }

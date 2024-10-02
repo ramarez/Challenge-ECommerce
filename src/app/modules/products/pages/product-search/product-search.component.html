@@ -192,7 +192,7 @@
                                         />
                                         <button type="submit" 
                                             [disabled]="!searchForm.valid"
-                                            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                            [ngClass]="{'button': searchForm.valid, 'button-disabled': !searchForm.valid}"
                                         >Search</button>
                                     </div>
                                     @if (textSearch.invalid && (textSearch.dirty || textSearch.touched)) {
@@ -295,17 +295,35 @@
                                     </defs>
                                     <rect stroke="none" fill="url(#pattern-4d2f8758-2f66-4332-9b69-ca19e9dfc001)" width="100%" height="100%"></rect>
                                 </svg>
-                            
-                                @if (showMessage) {
-                                    <div class="flex items-center justify-center h-full w-full">
-                                        <h1 class="text-2xl font-bold tracking-tight"><span class="text-gray-500">{{message}}</span></h1>
-                                    </div>
-                                } @else {
-                                    <div class="mt-6 mr-3 ml-3 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-4" >
-                                        @for (product of foundProducts; track product) {
-                                            <app-product [product]="product"></app-product>
+
+                                @switch (service.status()) {
+                                    @case ("loading") {
+                                        <app-loading></app-loading>
+                                    }
+                                    @case ("success") {
+                                        @defer {
+                                            <div class="mt-6 mr-2 ml-2 mb-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-4" >
+                                                @for (product of service.products(); track product) {
+                                                    <app-product [product]="product"></app-product>
+                                                }
+                                            </div>
+                                            @if (service.totalItems() > 0) {
+                                                <app-pagination class="group relative" [currentPage]="service.currentPage()" [totalItems]="service.totalItems()" [pageSize]="6" (pageChange)="pageChanged($event)"></app-pagination>
+                                            } @else {
+                                                <div class="flex items-center justify-center h-full w-full">
+                                                    <h1 class="text-base sm:text-2xl font-bold tracking-tight text-center">
+                                                        <span class="text-gray-500">There are no products...</span>
+                                                    </h1>
+                                                </div>
+                                            }
                                         }
-                                    </div>
+                                        @placeholder {
+                                            <app-loading [style]="'big'"></app-loading>
+                                        }
+                                    }
+                                    @case ("error") {
+                                        <app-error class="group relative" [message]="service.error() || ''" (reloadPage)="service.retry$.next()"></app-error>
+                                    }
                                 }
                             </div>
                         </div>
