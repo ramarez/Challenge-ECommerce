@@ -1,8 +1,9 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Injectable, Injector } from '@angular/core';
-import { HttpStatusCodes } from '../utils/http-status-codes';
-import { MessageService } from '../notification/services/message.service';
+import { HttpStatusCodes } from '../modules/shared';
+import { MessageService } from '../modules/notification';
+
 
 @Injectable()
 export class HttpStatusesInterceptor implements HttpInterceptor {
@@ -29,7 +30,7 @@ export class HttpStatusesInterceptor implements HttpInterceptor {
     protected showMessageError(message: string) {
         const messageService = this.injector.get(MessageService, null);
         if (messageService) {
-            messageService.error(message, undefined, {autoClose: true, keepAfterRouteChange: true});
+            messageService.error(message, "Http Response: Error", {autoClose: true, keepAfterRouteChange: true});
         }
     }
 

@@ -3,9 +3,9 @@ import { Component } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./components/navbar/navbar.component";
 import { FooterComponent } from "./components/footer/footer.component";
-import { AccountService } from './services/account.service';
-import { UserService } from './services/user.service';
-import { NotificationModule } from './notification/notification.module';
+import { AccountService } from './modules/security/services/account.service';
+import { UserService } from './modules/security/services/user.service';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Component({
     selector: 'app-root',
@@ -13,7 +13,6 @@ import { NotificationModule } from './notification/notification.module';
     imports: [RouterOutlet, CommonModule, NavbarComponent, RouterModule, FooterComponent, NotificationModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    providers: [AccountService, UserService]
 })
 export class AppComponent {
     title = 'Challenge-ECommerce';

@@ -1,5 +1,5 @@
 import { ErrorHandler, Injectable, Injector } from "@angular/core";
-import { UserService } from "../services/user.service";
+import { UserService } from "../modules/security/services/user.service";
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {

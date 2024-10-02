@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { AppStorage } from "../utils/app-storage";
+import { AppStorage } from "../modules/shared";
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {

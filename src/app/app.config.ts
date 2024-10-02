@@ -6,7 +6,7 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import { HttpStatusesInterceptor } from './interceptors/http-statuses.interceptor';
 import { GlobalErrorHandler } from './handlers/global-error.handler';
 import { ApiInterceptor } from './interceptors/api.interceptor';
-import { CartStore } from './shopping/stores/cart-store';
+import { CartStore } from './modules/shopping/stores/cart-store';
 
 export const appConfig: ApplicationConfig = {
     providers: [provideZoneChangeDetection({ eventCoalescing: true }), 
