@@ -24,7 +24,8 @@ export class ProductsService {
     }
 
     getAll(): Observable<IProduct[]> {
-        return this.http.get<IProduct[]>(`${this.url}/products`)
+        return this.http
+            .get<IProduct[]>(`${this.url}/products`)
             .pipe(
                 catchError(err => {
                     this.messageService.error(err, "Error in source", {autoClose: true});
@@ -35,7 +36,8 @@ export class ProductsService {
 
     getPage(page: number, pageSize: number = 8): Observable<IProductPage> {
         let totalItems = 0;
-        return this.http.get<IProduct[]>(`${this.url}/products`)
+        return this.http
+            .get<IProduct[]>(`${this.url}/products`)
             .pipe(
                 tap((products) => totalItems = products.length),
                 concatMap(x => x),
@@ -47,17 +49,13 @@ export class ProductsService {
     }
 
     get(productId: number): Observable<IProduct> {
-        return this.http.get<IProduct>(`${this.url}/products/${productId}`)
-            .pipe(
-                catchError(err => {
-                    this.messageService.error(err, "Error in source", {autoClose: true});
-                    throw err;
-                })
-            );
+        return this.http
+            .get<IProduct>(`${this.url}/products/${productId}`);
     }
 
     find(searchText: string, categories: ICategory[], prices: number[], sortBy: number, limit: number = 10): Observable<IProduct[]> {
-        return this.http.get<IProduct[]>(`${this.url}/products`)
+        return this.http
+            .get<IProduct[]>(`${this.url}/products`)
             .pipe(
                     map(x => x.filter(p => this.filterProduct(p, searchText, categories, prices))),
                     take(limit),

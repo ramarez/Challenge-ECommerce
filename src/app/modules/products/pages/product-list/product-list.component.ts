@@ -6,11 +6,12 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
 import { ProductComponent } from '../../components/product/product.component';
 import { PaginationComponent } from "../../components/pagination/pagination.component";
 import { ProductsSignalService } from './products-signal.service';
+import { ErrorComponent } from '../../../shared';
 
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule, RouterModule, ShortDescriptionPipe, LoadingComponent, ProductComponent, PaginationComponent],
+    imports: [CommonModule, RouterModule, ShortDescriptionPipe, LoadingComponent, ProductComponent, PaginationComponent, ErrorComponent],
     templateUrl: './product-list.component.html',
     styleUrl: './product-list.component.scss',
     providers: [ProductsSignalService]
