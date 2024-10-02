@@ -97,7 +97,7 @@ export class ProductDetailComponent implements OnInit {
 
     onSubmit() {
         if (this.product()) {
-            this.store.setCartItem({id: this.product()?.id || 0, product: this.product() || {} as IProduct, quantity: this.quantity.value});
+            this.store.setCartItem({id: this.product()?.id || 0, product: this.product() || {} as IProduct, quantity: parseInt(this.quantity.value)});
             this.messageService.success(`Update ${this.quantity.value} '${this.product()?.title}'.`, 'Shopping Card: Update successful', {autoClose: true, keepAfterRouteChange: true});
             this.router.navigateByUrl('/products/product-search');
         }

@@ -1,13 +1,14 @@
-import { computed, inject, Injectable, signal } from '@angular/core';;
-import { BehaviorSubject, retry, Subject, switchMap } from 'rxjs';
-import { ProductsService } from '../../services';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { IProductsState } from '../../models/products-state';
+import { ProductsService } from '../../services';
+import { asyncScheduler, BehaviorSubject, of, retry, scheduled, Subject, switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IProductFilter } from '../../models/product-filter';
 import { PRODUCT_PAGE_EMPTY } from '../../models/product-page';
-
+import { DEFAULT_SEARCH_PRODUCT_COMMAND, ISearchProductCommand } from '../../models/search-product-command';
 
 @Injectable()
-export class ProductsSignalService {
+export class ProductSearchSignalService {
     private productsService = inject(ProductsService);
 
     private state = signal<IProductsState>({
@@ -26,16 +27,20 @@ export class ProductsSignalService {
 
     retry$ = new Subject<void>();
     error$ = new Subject<Error>();
-    currentPage$ = new BehaviorSubject<number>(1);
+    currentPage$ = new BehaviorSubject<ISearchProductCommand>(DEFAULT_SEARCH_PRODUCT_COMMAND);
     productsForPage$ = this.currentPage$
         .pipe(
-            switchMap((currentPage) => this.productsService.getPage(currentPage).pipe(
-                retry({
-                    delay: (err) => {
-                        this.error$.next(err);
-                        return this.retry$;
-                    },
-                })))
+            switchMap((command) => !command.filter ? scheduled(of(PRODUCT_PAGE_EMPTY),  asyncScheduler) :
+                this.productsService.findPage(command)
+                    .pipe(
+                        retry({
+                            delay: (err) => {
+                                this.error$.next(err);
+                                return this.retry$;
+                            },
+                        })
+                    )
+            )
         );
 
     constructor() { 
@@ -51,12 +56,12 @@ export class ProductsSignalService {
 
         this.currentPage$
             .pipe(takeUntilDestroyed())
-            .subscribe((currentPage) =>
+            .subscribe((command) =>
                 this.state.update((state) => ({
                     ...state,
-                    currentPage,
+                    currentPage: command.page,
                     status: "loading",
-                    productsPage: PRODUCT_PAGE_EMPTY,
+                    productsPage: {products: [], totalItems: 0},
                 }))
             );
 

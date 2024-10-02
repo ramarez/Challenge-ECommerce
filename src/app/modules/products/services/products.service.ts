@@ -1,17 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, Injectable, signal } from '@angular/core';
-import { catchError, concatMap, delay, flatMap, map, mergeMap, Observable, of, reduce, retry, skip, startWith, Subject, switchMap, take, tap, toArray } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { catchError, concatMap, map, Observable, of, skip, switchMap, take, tap, toArray } from 'rxjs';
 import { IProduct } from '../models/product';
 import { ICategory } from '../models/category';
 import { MessageService } from '../../notification/services/message.service';
 import { IProductPage } from '../models/product-page';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-export interface IProductFilter {
-    text: string;
-    categories: ICategory[] | null;
-    prices: number[] | null;
-}
+import { IProductFilter } from '../models/product-filter';
+import { ISearchProductCommand } from '../models/search-product-command';
 
 @Injectable({
     providedIn: 'root'
@@ -53,17 +48,24 @@ export class ProductsService {
             .get<IProduct>(`${this.url}/products/${productId}`);
     }
 
-    find(searchText: string, categories: ICategory[], prices: number[], sortBy: number, limit: number = 10): Observable<IProduct[]> {
+    findPage(command: ISearchProductCommand, pageSize: number = 6): Observable<IProductPage> {
+        let totalItems = 0;
         return this.http
             .get<IProduct[]>(`${this.url}/products`)
             .pipe(
-                    map(x => x.filter(p => this.filterProduct(p, searchText, categories, prices))),
-                    take(limit),
-                    tap(result => this.sort(result, sortBy)),
-                    catchError(err => {
-                        this.messageService.error(err, "Error in source", {autoClose: true});
-                        throw err;
-                    })
+                map(x => x.filter(p => this.filterProduct(p, command))),
+                tap((products) => {
+                    totalItems = products.length;
+                    if (command.sortedBy != null) {
+                        this.sort(products, command.sortedBy);
+                    }
+                    
+                }),
+                concatMap(x => x),
+                skip((command.page - 1) * pageSize),
+                take(pageSize),
+                toArray(),
+                switchMap(products => of({products, totalItems: totalItems}))
             );
     }
 
@@ -82,9 +84,9 @@ export class ProductsService {
         });
     }
 
-    protected filterProduct(product: IProduct, searchText: string, categories: ICategory[], prices: number[]): boolean {
-        const inCategory = categories.length === 0 || categories.find(x => x.name == product.category) !== undefined;
-        const inPrice = prices.length === 0 || prices.find(x => {
+    protected filterProduct(product: IProduct, command: ISearchProductCommand): boolean {
+        const inCategory = command.filter?.categories?.length === 0 || command.filter?.categories?.find(x => x.name == product.category) !== undefined;
+        const inPrice = command.filter?.prices?.length === 0 || command.filter?.prices?.find(x => {
             //'$0 - $50', '$50 - $100', '$100 - $150', '$150 - $200', '$200+'
             switch(x) {
                 case 0:
@@ -99,6 +101,8 @@ export class ProductsService {
                     return product.price >= 200;
             }
         }) !== undefined;
-        return (product.title.search(new RegExp(searchText, "i")) != -1 || product.description.search(new RegExp(searchText, "i")) != -1) && inCategory && inPrice;
+
+        const text = command.filter?.text || '';
+        return (product.title.search(new RegExp(text, "i")) != -1 || product.description.search(new RegExp(text, "i")) != -1) && inCategory && inPrice;
     }
 }
