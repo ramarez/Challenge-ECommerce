@@ -35,15 +35,16 @@ export class ProductsSignalService {
     retry$ = new Subject<void>();
     error$ = new Subject<Error>();
     currentPage$ = new BehaviorSubject<number>(1);
-    productsForPage$ = this.currentPage$.pipe(
-        switchMap((currentPage) => this.productsService.getPage(currentPage).pipe(
-            retry({
-                delay: (err) => {
-                    this.error$.next(err);
-                    return this.retry$;
-                },
-            })))
-    );
+    productsForPage$ = this.currentPage$
+        .pipe(
+            switchMap((currentPage) => this.productsService.getPage(currentPage).pipe(
+                retry({
+                    delay: (err) => {
+                        this.error$.next(err);
+                        return this.retry$;
+                    },
+                })))
+        );
 
     constructor() { 
         this.productsForPage$
@@ -74,13 +75,13 @@ export class ProductsSignalService {
             );
 
         this.error$
-        .pipe(takeUntilDestroyed())
-        .subscribe((error) => {
-            this.state.update((state) => ({
-                ...state,
-                status: "error",
-                error: error.message,
-            }))
-        });
+            .pipe(takeUntilDestroyed())
+            .subscribe((error) => {
+                this.state.update((state) => ({
+                    ...state,
+                    status: "error",
+                    error: error.message,
+                }))
+            });
     }
 }
